@@ -91,23 +91,22 @@ class VmTriggerConfig(object):
   def generate_config(self, included_files):
     """Generates GCB trigger config."""
     included_files.sort()
-    trigger = {
-        'description': 'Trigger for VM %s' % self._solution,
+    return {
+        'description': f'Trigger for VM {self._solution}',
         'filename': CLOUDBUILD_CONFIG_FILE,
         'github': {
             'name': 'click-to-deploy',
             'owner': 'GoogleCloudPlatform',
             'pullRequest': {
                 'branch': '.*',
-                'commentControl': 'COMMENTS_ENABLED'
-            }
+                'commentControl': 'COMMENTS_ENABLED',
+            },
         },
         'includedFiles': included_files,
         'substitutions': {
             '_SOLUTION_NAME': self._solution
-        }
+        },
     }
-    return trigger
 
 
 class CreateThreadPoolAndWait(object):
@@ -147,9 +146,11 @@ def get_cookbook_deps(cookbook, knife_binary):
     return _COOKBOOKS[cookbook]
 
   command = [
-      knife_binary, 'deps', '--config-option',
-      'cookbook_path=%s' % COOKBOOKS_DIR,
-      os.path.join('/cookbooks', cookbook)
+      knife_binary,
+      'deps',
+      '--config-option',
+      f'cookbook_path={COOKBOOKS_DIR}',
+      os.path.join('/cookbooks', cookbook),
   ]
   deps, exit_code = invoke_shell(command)
   assert exit_code == 0, exit_code
